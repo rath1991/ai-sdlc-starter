@@ -1,0 +1,71 @@
+# Machine-readable traceability
+#
+# Purpose: let humans AND agents answer, without reading source code —
+#   - Why does this component exist?          (Intent -> Spec)
+#   - Which recipe implements it?             (Spec -> Recipe)
+#   - Which eval proves the promised behavior? (Spec -> Eval)
+#   - What must be regenerated after CR-017?  (impact graph)
+#
+# Maintained by: recipe-compiler agent. Validated at the Build Ready gate.
+#
+# Invariants (deterministic, enforced):
+#   - Every Spec ID referenced here exists in Spec.md
+#   - Every in-scope Intent ID appears in at least one spec chain
+#   - Every recipe path resolves to a real file
+#   - Every eval declares what it proves
+#   - No orphan components: every SPEC-* traces to an INT-*
+#
+# Replace the example below with this project's real chain.
+# A worked example lives in examples/golden-thread/traceability.yaml
+
+meta:
+  intent_version: 0.1
+  spec_version: 0.1
+  generated:
+  generator: recipe-compiler
+
+# ---------------------------------------------------------------------------
+# Intent requirements -> Spec components
+# ---------------------------------------------------------------------------
+
+INT-010:
+  description:
+  specs: []
+  #  - SPEC-010
+
+# ---------------------------------------------------------------------------
+# Spec components -> recipes and evals
+# ---------------------------------------------------------------------------
+
+SPEC-010:
+  component:
+  type:            # agent | tool | service | store
+  intent: INT-010
+  recipes: []
+  #  - recipes/agents/<name>.yaml
+  evals: []
+  #  - EVAL-001
+
+# ---------------------------------------------------------------------------
+# Evals -> what they prove
+# ---------------------------------------------------------------------------
+
+EVAL-001:
+  description:
+  proves: []
+  #  - INT-010
+  #  - SPEC-010
+
+# ---------------------------------------------------------------------------
+# Change impact — populated by change-reconciliation
+# ---------------------------------------------------------------------------
+
+changes: {}
+#  CR-001:
+#    classification: C
+#    affects:
+#      - INT-010
+#      - SPEC-010
+#    regenerate:
+#      - recipes/agents/<name>.yaml
+#      - evals/eval_config.yaml

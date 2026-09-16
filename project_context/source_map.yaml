@@ -1,0 +1,49 @@
+# Provenance index for the supplied blueprint package.
+#
+# Built by /intake-blueprint. Every claim in Intent.md cites an ID from here.
+#
+# Authority ratings:
+#   high    — approved, attributed, dated
+#   medium  — attributed, but not formally approved
+#   low     — informal notes, unattributed
+#   unclear — undated, unattributed, or marked draft
+#
+# Treat `unclear` material as unsettled. Do not promote it to authoritative by using it.
+
+sources: []
+
+# Example:
+#
+# sources:
+#   - id: workshop-01
+#     file: supplied-source-documents/discovery-workshop-notes.pdf
+#     type: workshop              # workshop | process-map | value-statement |
+#                                 # persona | interview | report | other
+#     date: 2026-02-14
+#     author: Business Blueprinting team
+#     authority: high
+#     covers: [problem, personas, pain-points]
+#     notes: Sections 3-4 contradict process-map-v2 on step ownership
+#
+#   - id: process-map-v2
+#     file: supplied-source-documents/current-state-process-v2.vsdx
+#     type: process-map
+#     date: 2026-01-30
+#     author:
+#     authority: unclear          # undated revision, no approver recorded
+#     covers: [process]
+#     notes: Describes intended process; actual process unverified
+
+# Contradictions found during intake. Record; do not resolve.
+contradictions: []
+#   - topic: Ownership of approval step
+#     reading_a: {source: workshop-01, says: Reliability engineer approves}
+#     reading_b: {source: process-map-v2, says: Maintenance planner approves}
+#     raised_as: INT-040
+
+# Intent sections with no supporting source.
+gaps: []
+#   - section: "§6 value hypothesis — baseline"
+#     status: absent
+#     blocking: true
+#     raised_as: INT-041

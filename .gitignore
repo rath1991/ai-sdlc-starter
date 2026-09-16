@@ -1,0 +1,34 @@
+# Local environment
+.env
+.env.*
+!.env.example
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/*
+!.vscode/settings.json
+.idea/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Eval output — results are regenerated, not committed
+evals/results/
+evals/.cache/
+
+# Secrets
+*.pem
+*.key
+credentials.json

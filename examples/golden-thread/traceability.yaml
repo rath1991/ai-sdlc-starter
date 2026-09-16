@@ -1,0 +1,167 @@
+# Traceability — Equipment Reliability Risk Identification (worked example)
+#
+# Read the chain: INT-004 -> SPEC-011 -> recipe -> EVAL-007
+#
+# This is what makes "why does this component exist?" and "which requirement does this
+# eval prove?" answerable without reading code.
+
+meta:
+  intent_version: 1.3
+  spec_version: 2.1
+  generated: 2026-03-25
+  generator: recipe-compiler
+
+# ---------------------------------------------------------------------------
+# Intent requirements -> Spec components
+# ---------------------------------------------------------------------------
+
+INT-004:
+  description: Reconstruct equipment failure chronology
+  specs:
+    - SPEC-011
+    - SPEC-014
+
+INT-010:
+  description: Reconstruct evidence chronology from three source systems
+  specs:
+    - SPEC-011
+    - SPEC-012
+    - SPEC-013
+    - SPEC-015
+
+INT-011:
+  description: Surface rising risk not flagged by threshold alarms
+  specs:
+    - SPEC-014
+
+INT-012:
+  description: Source attribution for every chronology element
+  specs:
+    - SPEC-011
+    - SPEC-012
+
+INT-013:
+  description: Report confidence, including insufficiency
+  specs:
+    - SPEC-011
+
+# ---------------------------------------------------------------------------
+# Spec components -> recipes and evals
+# ---------------------------------------------------------------------------
+
+SPEC-011:
+  component: FailureChronologyAgent
+  type: agent
+  intent: [INT-004, INT-010, INT-012, INT-013]
+  recipes:
+    - recipes/agents/failure_chronology.yaml
+  evals:
+    - EVAL-007
+    - EVAL-008
+    - EVAL-009
+    - EVAL-012      # out_of_contract
+    - EVAL-013      # out_of_contract
+
+SPEC-012:
+  component: document_retrieval
+  type: tool
+  intent: [INT-010, INT-012]
+  reuse: {decision: REUSE, source: "catalogue://retrieval/document-retrieval@2.3.0"}
+  recipes:
+    - recipes/tools/document_retrieval.yaml
+  evals: [EVAL-009]
+
+SPEC-013:
+  component: timestamp_normalize
+  type: tool
+  intent: [INT-010]
+  reuse: {decision: EXTEND, source: "catalogue://data/date-parse@1.4.0"}
+  recipes:
+    - recipes/tools/timestamp_normalize.yaml
+  evals: [EVAL-011]
+  note: >
+    Demoted from NormalizationAgent (Spec v1.0) by architecture-roast. The reasoning
+    test failed: deterministic parsing, not judgment.
+
+SPEC-014:
+  component: RiskIndicatorSweep
+  type: scheduled_job
+  intent: [INT-011]
+  recipes:
+    - recipes/agents/risk_sweep.yaml
+  evals: [EVAL-010]
+  note: >
+    Demoted from SweepOrchestratorAgent (Spec v1.0) by architecture-roast. Called two
+    components in fixed order and decided nothing.
+
+SPEC-015:
+  component: sensor_history_query
+  type: tool
+  intent: [INT-010]
+  reuse: {decision: REUSE, source: "catalogue://historian/ts-query@1.1.0"}
+  recipes:
+    - recipes/tools/sensor_history_query.yaml
+  evals: [EVAL-007]
+
+# ---------------------------------------------------------------------------
+# Evals -> what they prove
+# ---------------------------------------------------------------------------
+
+EVAL-007:
+  description: Ordering under conflicting timestamps
+  type: behavioral
+  proves: [INT-004, SPEC-011]
+
+EVAL-008:
+  description: Insufficiency detection; zero false-confident
+  type: behavioral
+  proves: [INT-013, SPEC-011]
+
+EVAL-009:
+  description: Every element attributable to source
+  type: behavioral
+  proves: [INT-012, SPEC-011, SPEC-012]
+
+EVAL-010:
+  description: Detection of risk not flagged by alarms
+  type: behavioral
+  proves: [INT-011, SPEC-014]
+
+EVAL-011:
+  description: Date parseability on real records
+  type: behavioral
+  proves: [INT-030, SPEC-013]
+
+EVAL-012:
+  description: Must not emit a prescriptive maintenance recommendation
+  type: out_of_contract
+  proves: [INT-010]         # Intent §7 exclusion
+  note: Caught the CR-001 regression attempt
+
+EVAL-013:
+  description: Must not declare an asset safe to operate
+  type: out_of_contract
+  proves: [INT-010]         # Intent §7 exclusion
+
+EVAL-014:
+  description: No write path to the maintenance system of record
+  type: out_of_contract
+  proves: [INT-010]         # Intent §7 exclusion
+
+# ---------------------------------------------------------------------------
+# Change impact
+# ---------------------------------------------------------------------------
+
+changes:
+  CR-001:
+    summary: "Add maintenance recommendation"
+    classification: C
+    decision: deferred
+    affects:
+      - INT-010           # would require amending Intent §7 out-of-scope
+      - SPEC-011          # would require changing autonomy.must_not
+    regenerate: []        # nothing — deferred, so no downstream change
+    note: >
+      Classified C because it changes Intent §7 out-of-scope, which is a business
+      decision about accountability for intervention, not an implementation choice.
+      Deferred by the business owner. EVAL-012 continues to enforce the exclusion.

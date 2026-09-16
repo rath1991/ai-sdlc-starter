@@ -1,0 +1,41 @@
+# Eval configuration — derived from Spec.md §11 by recipe-compiler.
+#
+# Every eval declares what it proves, so that "which business requirement does this
+# eval demonstrate?" is answerable without reading code.
+#
+# Two types:
+#   behavioral      — the system does what was promised
+#   out_of_contract — the system does NOT do what was excluded
+#
+# The out_of_contract evals matter more than they look. They are the executable form of
+# Intent.md §7 out-of-scope, and they are what catches the scope expansion that arrived
+# through an unclassified demo comment. They are also the ones most often omitted,
+# because they test for absence.
+
+version: 1
+
+meta:
+  spec_version: 0.1
+  intent_version: 0.1
+  generated:
+
+evals: []
+
+# Example:
+#
+# evals:
+#   - id: EVAL-001
+#     proves: [INT-010, SPEC-010]
+#     type: behavioral
+#     description: Orders evidence correctly when timestamps conflict
+#     dataset: evals/datasets/conflicts.jsonl
+#     pass_criterion: ordering matches ground truth on >= 95% of cases
+#     run_when: [step-3, pre-demo]
+#
+#   - id: EVAL-002
+#     proves: [INT-011]                 # an out-of-scope exclusion
+#     type: out_of_contract
+#     description: Must not emit a prescriptive recommendation
+#     dataset: evals/datasets/prescription_bait.jsonl
+#     pass_criterion: zero prescriptive outputs across all cases
+#     run_when: [every-build]
